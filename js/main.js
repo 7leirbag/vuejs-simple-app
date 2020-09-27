@@ -1,46 +1,41 @@
-
-
-Vue.component('product',{
-  props: { 
-    premium:{ type: Boolean, requireo: true}
+Vue.component('product', {
+  props: {
+    premium: {
+      type: Boolean,
+      requireo: true
+    }
   },
   template: `
-  <div class="product">
+    <div class="product">
+      <div class="product-image">
+          <img :src="image" alt="" srcset="">
+      </div>
 
-            <div class="product-image">
-                <img :src="image" alt="" srcset="">
-            </div>
+      <div class="product-info">
+          <h1>{{ title }} </h1>
+          <p>{{ sale }}</p>
+          <p>{{ description }}</p>
+          <p v-if="inStock">In Stock</p>
+          <p v-else :class="{ outOfStock: !inStock }">Out of Stock</p>
+          <p>Shipping: {{ shipping }}
+          
+          <product-details :details="details"></product-details>
 
-            <div class="product-info">
-                <h1>{{ title }} </h1>
-                <p>{{ sale }}</p>
-                <p>{{ description }}</p>
-                <p v-if="inStock">In Stock</p>
-                <p v-else :class="{ outOfStock: !inStock }">Out of Stock</p>
-                <p>Shipping: {{ shipping }}
-                
-                <product-details :details="details"></product-details>
-
-               <product-sizes  :sizes="sizes"></product-sizes>
-
-
-                <div class="color-box" v-for="(variant, index) in variants" :key="variant.variantId"
-                    :style="{ backgroundColor: variant.variantColor }" @mouseover="updateProduct(index)">
-                </div>
-                <button v-on:click="addToCart" :disabled="!inStock" :class="{ disabledButton: !inStock }">
-                    Add to cart
-                </button>
-                <button @click="removeFromCart">Remove from cart</button>
+          <product-sizes  :sizes="sizes"></product-sizes>
 
 
-                <div class="cart">
-                    <p>Cart({{ cart }})</p>
-                </div>
-            </div>
+          <div class="color-box" v-for="(variant, index) in variants" :key="variant.variantId"
+              :style="{ backgroundColor: variant.variantColor }" @mouseover="updateProduct(index)">
+          </div>
+          <button v-on:click="addToCart" :disabled="!inStock" :class="{ disabledButton: !inStock }">
+              Add to cart
+          </button>
+          <button @click="removeFromCart">Remove from cart</button>
+      </div>
 
-        </div>
+    </div>
   `,
-  data(){
+  data() {
     return {
       product: 'Socks',
       description: 'A pair of warm fuzzy socks',
@@ -48,53 +43,50 @@ Vue.component('product',{
       brand: 'Vue Mastery',
       selectedVariant: 0,
       details: ['80% cotton', '20% polyester', 'Gender-neutral'],
-      variants: [
-        {
+      variants: [{
           variantId: 2234,
           variantColor: 'green',
           variantImage: './assets/vmSocks-green-onWhite.jpg',
-          variantQuantity: 10     
+          variantQuantity: 10
         },
         {
           variantId: 2235,
           variantColor: 'blue',
           variantImage: './assets/vmSocks-blue-onWhite.jpg',
-          variantQuantity: 0     
+          variantQuantity: 0
         }
       ],
       sizes: ['S', 'M', 'L', 'XL', 'XXL', 'XXXL'],
-      cart: 0,
     }
   },
-    methods: {
-      addToCart() {
-        this.cart += 1
-      },
-      updateProduct(index) {
-        this.selectedVariant = index
-      },
-      removeFromCart() {
-        this.cart = this.cart > 0 ? this.cart - 1 : 0;
-      }
+  methods: {
+    addToCart() {
+      this.$emit('add-to-cart', this.variants[this.selectedVariant].variantId);
+    },
+    updateProduct(index) {
+      this.selectedVariant = index
+    },
+    removeFromCart() {
+      this.$emit('remove-from-cart', this.variants[this.selectedVariant].variantId);      
     }
-    ,
-      computed: {
-          title() {
-              return this.brand + ' ' + this.product  
-          },
-          image(){
-              return this.variants[this.selectedVariant].variantImage
-          },
-          inStock(){
-              return this.variants[this.selectedVariant].variantQuantity
-          },
-          sale() {
-            return this.brand + ' ' + this.product + ` are ${this.onSale? 'on' : 'not'} sale!`;
-          },
-          shipping(){
-            return this.premium ? "Free" : "2.99";
-          }
-      }
+  },
+  computed: {
+    title() {
+      return this.brand + ' ' + this.product
+    },
+    image() {
+      return this.variants[this.selectedVariant].variantImage
+    },
+    inStock() {
+      return this.variants[this.selectedVariant].variantQuantity
+    },
+    sale() {
+      return this.brand + ' ' + this.product + ` are ${this.onSale? 'on' : 'not'} sale!`;
+    },
+    shipping() {
+      return this.premium ? "Free" : "2.99";
+    }
+  }
 })
 
 Vue.component('product-details', {
@@ -129,6 +121,16 @@ Vue.component('product-sizes', {
 var app = new Vue({
   el: '#app',
   data: {
-    premium: true
+    premium: true,
+    cart: []
+  },
+  methods: {
+    updateCart(id){
+      this.cart.push(id);
+    },
+    removeFromCart(id){
+      this.cart = this.cart.filter(item => item != id);
+    }
+
   }
 })
