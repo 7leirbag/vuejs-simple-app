@@ -1,6 +1,9 @@
 
 
 Vue.component('product',{
+  props: { 
+    premium:{ type: Boolean, requireo: true}
+  },
   template: `
   <div class="product">
 
@@ -14,7 +17,7 @@ Vue.component('product',{
                 <p>{{ description }}</p>
                 <p v-if="inStock">In Stock</p>
                 <p v-else :class="{ outOfStock: !inStock }">Out of Stock</p>
-
+                <p>Shipping: {{ shipping }}
                 <ul>
                     <li v-for="detail in details">{{ detail }}</li>
                 </ul>
@@ -90,11 +93,17 @@ Vue.component('product',{
           },
           sale() {
             return this.brand + ' ' + this.product + ` are ${this.onSale? 'on' : 'not'} sale!`;
+          },
+          shipping(){
+            return this.premium ? "Free" : "2.99";
           }
       }
 })
 
 
 var app = new Vue({
-  el: '#app'
+  el: '#app',
+  data: {
+    premium: true
+  }
 })
