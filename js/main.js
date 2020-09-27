@@ -18,13 +18,10 @@ Vue.component('product',{
                 <p v-if="inStock">In Stock</p>
                 <p v-else :class="{ outOfStock: !inStock }">Out of Stock</p>
                 <p>Shipping: {{ shipping }}
-                <ul>
-                    <li v-for="detail in details">{{ detail }}</li>
-                </ul>
+                
+                <product-details :details="details"></product-details>
 
-                <ul>
-                    <li v-for="size in sizes">{{ size }}</li>
-                </ul>
+               <product-sizes  :sizes="sizes"></product-sizes>
 
 
                 <div class="color-box" v-for="(variant, index) in variants" :key="variant.variantId"
@@ -98,6 +95,34 @@ Vue.component('product',{
             return this.premium ? "Free" : "2.99";
           }
       }
+})
+
+Vue.component('product-details', {
+  props: {
+    details: {
+      type: Array,
+      required: true
+    }
+  },
+  template: `
+    <ul>
+      <li v-for="detail in details">{{ detail }}</li>
+    </ul>
+  `
+})
+
+Vue.component('product-sizes', {
+  props: {
+    sizes: {
+      type: Array,
+      required: true
+    }
+  },
+  template: `
+    <ul>
+      <li v-for="size in sizes">{{ size }}</li>
+    </ul>
+  `
 })
 
 
